@@ -1,24 +1,29 @@
-/* global Phaser */
 class SplashScene extends Phaser.Scene {
     constructor() {
-        super({ key: "splashScene" })
+        super({ key: 'splashScene' });
     }
   
-    /**
-     * Can be defined on your own Scenes.
-     * This method is called by the Scene Manager when the scene starts,
-     * before preload() and create().
-     * @param {object} data - Any data passed via ScenePlugin.add() or ScenePlugin.start().
-     */
-    init(data) {
-        this.cameras.main.setBackgroundColor('#ffffff')
+  
+    init (data) {
+    this.cameras.main.setBackgroundColor("ffffff");
     }
-    Preload() {
+  
+    preload() {
         console.log('Splash Scene')
+        this.load.image('splashSceneBackground', './assets/splashSceneImage.png');
     }
+  
     create(data) {
+        this.splashSceneBackgroundImage = this.add.sprite(0, 0, 'splashSceneBackground')
+        this.splashSceneBackgroundImage.x = 1920 / 2
+        this.splashSceneBackgroundImage.y = 1080 / 2
     }
+  
     update(time, delta) {
+        if (time > 3000) {
+            this.scene.switch('titleScene');
+        }
     }
-}
-export default splashScene
+  }
+    export default SplashScene
+
