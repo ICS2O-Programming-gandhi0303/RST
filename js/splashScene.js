@@ -23,7 +23,7 @@ class SplashScene extends Phaser.Scene {
      */
     preload() {
       console.log("Splash Scene");
-      this.load.image("splashSceneBackgroundImage", "assets/splashSceneImage.png");
+      this.load.image("splashSceneBackgroundImage", "./assets/splashSceneImage.png");
     }
   
     /**
