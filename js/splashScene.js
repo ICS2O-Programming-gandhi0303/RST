@@ -41,12 +41,6 @@ class SplashScene extends Phaser.Scene {
       this.splashSceneBackgroundImage.y = 1080 / 2;
     }
   
-    /**
-     * Should be overridden by your own Scenes.
-     * This method is called once per game step while the scene is running.
-     * @param {number} time - The current time.
-     * @param {number} delta - The delta time in ms since the last frame.
-     */
     update(time, delta) {
       if (time > 3000) {
         this.scene.switch("titleScene");
