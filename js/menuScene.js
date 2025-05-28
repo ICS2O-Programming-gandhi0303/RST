@@ -1,4 +1,4 @@
-class MenuScene extends Phaser.Scene { 
+class MenuScene extends Phaser.Scene {
     constructor() {
       super({ key: "menuScene" })
       this.menuSceneBackgroundImage = null
@@ -24,8 +24,8 @@ class MenuScene extends Phaser.Scene {
     }
     update(time, delta) {
     }
-       clickButton() {
-       this.scene.start("gameScene")
+    clickButton() {
+      this.scene.start("gameScene")
     }
   }
   
