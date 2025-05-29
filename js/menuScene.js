@@ -1,3 +1,4 @@
+/*global phaser*/
 class MenuScene extends Phaser.Scene {
     constructor() {
       super({ key: "menuScene" })

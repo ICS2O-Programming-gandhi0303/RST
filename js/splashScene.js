@@ -1,3 +1,4 @@
+/*global phaser*/
 class SplashScene extends Phaser.Scene {
     /**
      * This method is the constructor.
