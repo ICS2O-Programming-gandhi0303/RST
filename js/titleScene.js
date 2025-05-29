@@ -5,10 +5,10 @@ class TitleScene extends Phaser.Scene {
   
       this.titleSceneBackgroundImage = null
       this.titleSceneText = null
-      this.titleSceneTextStyle = { font: "200px Times", fill: "#fde4b9", align: "center" }
+      this.titleSceneTextStyle = { fontFamily: "Times", fontSize: "200px", color: "#fde4b9", align: "center" }
     }
     init() {
-      this.cameras.main.setBackgroundColor("ffffff")
+      this.cameras.main.setBackgroundColor("#ffffff")
     }
   
     preload() {

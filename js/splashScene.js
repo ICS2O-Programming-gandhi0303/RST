@@ -1,4 +1,4 @@
-/*global phaser*/
+/*global Phaser*/
 class SplashScene extends Phaser.Scene {
     /**
      * This method is the constructor.
@@ -6,6 +6,7 @@ class SplashScene extends Phaser.Scene {
     constructor() {
       super({ key: "splashScene" });
       this.splashSceneBackgroundImage = null;
+      this.startTime = null;
     }
     init() {
       this.cameras.main.setBackgroundColor("#ffffff");
@@ -16,13 +17,11 @@ class SplashScene extends Phaser.Scene {
       this.load.image("splashSceneBackgroundImage", "./assets/splashSceneImage.png");
     }
     create() {
-      this.splashSceneBackgroundImage = this.add.sprite(
-        0,
-        0,
+      this.splashSceneBackgroundImage = this.add.image(
+        1920 / 2,
+        1080 / 2,
         "splashSceneBackgroundImage"
       );
-      this.splashSceneBackgroundImage.x = 1920 / 2;
-      this.splashSceneBackgroundImage.y = 1080 / 2;
     }
   
     update(time) {
