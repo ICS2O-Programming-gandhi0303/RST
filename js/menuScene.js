@@ -5,7 +5,7 @@ class MenuScene extends Phaser.Scene {
       this.startButton = null
     }
   
-    init(data) {
+    init() {
       this.cameras.main.setBackgroundColor("#ffffff")
     }
     preload() {
@@ -13,7 +13,7 @@ class MenuScene extends Phaser.Scene {
       this.load.image("menuSceneBackground", "./assets/aliens_screen_image2.jpg")
       this.load.image("startButton", "./assets/start.png")
     }
-    create(data) {
+    create() {
       this.menuSceneBackgroundImage = this.add.sprite(0, 0, "menuSceneBackground")
       this.menuSceneBackgroundImage.x = 1920 / 2
       this.menuSceneBackgroundImage.y = 1080 / 2
@@ -22,7 +22,7 @@ class MenuScene extends Phaser.Scene {
       this.startButton.on('pointerdown', () => this.clickButton())
       
     }
-    update(time, delta) {
+    update() {
     }
     clickButton(){
       this.scene.start("gameScene")

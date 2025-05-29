@@ -1,3 +1,4 @@
+import Phaser from "phaser"
 import SplashScene from "./splashScene.js"
 import TitleScene from "./titleScene.js"
 import MenuScene from "./menuScene.js"
@@ -29,7 +30,7 @@ const config = {
   },
 }
 
- game = new Phaser.Game(config)
+const game = new Phaser.Game(config)
 
 // load scenes
 // Note: remember any "key" is global and CAN NOT be reused!

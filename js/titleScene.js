@@ -4,9 +4,9 @@ class TitleScene extends Phaser.Scene {
   
       this.titleSceneBackgroundImage = null
       this.titleSceneText = null
-      this.titleSceneTextStyle = { font: "200px Times", fill: "#fde4b9",align: "center",}
+      this.titleSceneTextStyle = { font: "200px Times", fill: "#fde4b9", align: "center" }
     }
-    init(data) {
+    init() {
       this.cameras.main.setBackgroundColor("ffffff")
     }
   
@@ -15,7 +15,7 @@ class TitleScene extends Phaser.Scene {
       this.load.image("titleSceneBackground", "./assets/aliens_screen_image.jpg")
     }
   
-    create(data) {
+    create() {
       this.titleSceneBackgroundImage = this.add.sprite(0, 0, "titleSceneBackground").setScale(2.75)
   
       this.titleSceneBackgroundImage.x = 1920 / 2
@@ -24,7 +24,7 @@ class TitleScene extends Phaser.Scene {
       this.titleSceneText = this.add
         .text(1920 / 2, (1080 / 2) + 350, "WARZONE", this.titleSceneTextStyle).setOrigin(0.5)
     }
-    update(time, delta) {
+    update(time) {
       if (time > 6000) {
         this.scene.switch("menuScene");
       }
