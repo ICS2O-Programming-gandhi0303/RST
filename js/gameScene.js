@@ -1,7 +1,7 @@
 /*global phaser*/
 class GameScene extends Phaser.Scene {
   constructor () {
-    super({ key: 'gameScene' })
+    super({ key: 'gameScene', physics: { default: 'arcade' } })
 
     this.background = null
     this.ship = null

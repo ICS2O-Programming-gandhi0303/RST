@@ -22,6 +22,7 @@ class TitleScene extends Phaser.Scene {
       this.titleSceneBackgroundImage.x = 1920 / 2
       this.titleSceneBackgroundImage.y = 1080 / 2
   
+      // eslint-disable-next-line
       this.titleSceneText = this.add
         .text(1920 / 2, (1080 / 2) + 350, "WARZONE", this.titleSceneTextStyle).setOrigin(0.5)
     }
