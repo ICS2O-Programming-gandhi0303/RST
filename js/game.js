@@ -1,5 +1,4 @@
 /*global Phaser*/
-import Phaser from "phaser"
 import SplashScene from "./splashScene.js"
 import TitleScene from "./titleScene.js"
 import MenuScene from "./menuScene.js"
