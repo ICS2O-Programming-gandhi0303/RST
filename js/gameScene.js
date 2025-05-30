@@ -1,15 +1,14 @@
 class GameScene extends Phaser.Scene {
   createAlien() {
-    const alien = this.physics.add.sprite(1920 / 2, 100, 'alien')
-    alien.setVelocityY(50)
-    alien.setCollideWorldBounds(true)
-    alien.setBounce(1)
-    this.alienGroup.add(alien)
-    this.physics.add.collider(this.ship, this.alienGroup, function(ship, alien) {
-      console.log('Ship collided with alien!')
-      alien.destroy() 
-    })
-  }
+    const alienXlocation = Math.floor(Math.random() * 1920) + 1
+    let alienXVelocity = Math.floor(Math.random() * 50) + 1
+    alienXVelocity *= Math.round(Math.random()) ? -1 : 1 
+    const anAlien = this.physics.add.sprite(alienXlocation, -100, 'alien')
+    anAlien.body.velocity.y = (200)
+    anAlien.body.velocity.x = alienXVelocity
+    this.alienGroup.add(anAlien)
+  
+    }
   constructor() {
     super({ key: 'gameScene', physics: { default: 'arcade' } })
 
