@@ -31,6 +31,7 @@ class GameScene extends Phaser.Scene {
     this.load.image("alien", "./assets/alien.png")
     // Load the sound effect for the laser
     this.load.audio("laser", "./assets/laser1.wav")
+    this.load.audio("explosion", "./assets/barrelExploding.wav")
   }
 
   create() {
@@ -38,12 +39,20 @@ class GameScene extends Phaser.Scene {
     this.background.setOrigin(0, 0)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
     this.missileGroup = this.physics.add.group()
-    this.alienGroup = this.add.group()
+    this.alienGroup = this.physics.add.group()
     this.createAlien()
+ 
+    this.physics.add.collider(this.missileGroup, this.alienGroup, function (_, alienCollide) {
+      alienCollide.destroy()
+      this.sound.play("explosion")
+      this.createAlien()
+      this.createAlien()
+    }.bind(this))
 
     // Set up keyboard cursors
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+
   }
 
   update() {
