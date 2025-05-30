@@ -17,9 +17,6 @@ class GameScene extends Phaser.Scene {
     this.ship = null
     this.fireMissile = false
     this.missileGroup = null
-    this.alienGroup = null
-    this.cursors = null
-    this.keySpaceObj = null
   }
 
   init() {
@@ -37,7 +34,7 @@ class GameScene extends Phaser.Scene {
     this.load.audio("explosion", "./assets/barrelExploding.wav")
   }
 
-  create() {
+  create(data) {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
@@ -58,7 +55,7 @@ class GameScene extends Phaser.Scene {
 
   }
 
-  update() {
+  update(time, delta) {
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
       if (this.ship.x < 0) {
