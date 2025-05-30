@@ -57,10 +57,12 @@ class GameScene extends Phaser.Scene {
     if (this.keySpaceObj.isUp === true) {
       this.fireMissile = false
     }
-    this.missileGroup.children.each(function (item) {
-      item.y = item.y - 10
-      if (item.y < 0) {
-        item.destroy()
+    this.missileGroup.getChildren().forEach((item) => {
+      if (item && item.y !== undefined) {
+        item.y = item.y - 10
+        if (item.y < 0) {
+          item.destroy()
+        }
       }
     });
   }
