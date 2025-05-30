@@ -4,19 +4,23 @@ class GameScene extends Phaser.Scene {
     let alienXVelocity = Math.floor(Math.random() * 50) + 1
     alienXVelocity *= Math.round(Math.random()) ? -1 : 1 
     const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
+    anAlien.body.allowGravity = false
     anAlien.body.velocity.y = 200
     anAlien.body.velocity.x = alienXVelocity
-    anAlien.body.immovable = true // Prevent aliens from being pushed by missiles
-    this.alienGroup.add(anAlien)
+    if (this.alienGroup) {
+      this.alienGroup.add(anAlien)
+    }
   }
-
   constructor() {
-    super({ key: 'gameScene', active: true, physics: { default: 'arcade', arcade: { debug: false } } })
+    super({ key: 'gameScene' })
 
     this.background = null
     this.ship = null
     this.fireMissile = false
     this.missileGroup = null
+    this.alienGroup = null
+    this.cursors = null
+    this.keySpaceObj = null
   }
 
   init() {
@@ -32,14 +36,13 @@ class GameScene extends Phaser.Scene {
     // Load the sound effect for the laser
     this.load.audio("laser", "./assets/laser1.wav")
     this.load.audio("explosion", "./assets/barrelExploding.wav")
-  }
-
-  create(data) {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
+    // Ensure groups are initialized before creating aliens
+    this.createAlien()
     this.createAlien()
  
     this.physics.add.collider(this.missileGroup, this.alienGroup, function (_, alienCollide) {
@@ -55,7 +58,7 @@ class GameScene extends Phaser.Scene {
 
   }
 
-  update(time, delta) {
+  update() {
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
       if (this.ship.x < 0) {
