@@ -15,6 +15,7 @@ class GameScene extends Phaser.Scene {
     this.ship = null
     this.fireMissile = false
     this.missileGroup = null
+    this.alienGroup = null
     this.cursors = null
     this.keySpaceObj = null
   }
@@ -74,18 +75,21 @@ class GameScene extends Phaser.Scene {
       
         const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
         this.missileGroup.add(aNewMissile)
+        aNewMissile.body.allowGravity = false
         this.sound.play("laser")
       }
     }
     if (this.keySpaceObj.isUp) {
       this.fireMissile = false
+      this.missileGroup.getChildren().forEach(function(item) {
+        if (item.active) {
+          item.y -= 10
+          if (item.y < 0) {
+            item.destroy()
+          }
+        }
+      });
     }
-    this.missileGroup.getChildren().forEach(function(item) {
-      item.y -= 10
-      if (item.y < 0) {
-        item.destroy()
-      }
-    })
   }
 }
 export default GameScene;
