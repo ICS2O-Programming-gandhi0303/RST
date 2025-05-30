@@ -4,12 +4,14 @@ class GameScene extends Phaser.Scene {
     let alienXVelocity = Math.floor(Math.random() * 50) + 1
     alienXVelocity *= Math.round(Math.random()) ? -1 : 1 
     const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
-    anAlien.body.velocity.y = (200)
+    anAlien.body.velocity.y = 200
     anAlien.body.velocity.x = alienXVelocity
+    anAlien.body.immovable = true // Prevent aliens from being pushed by missiles
     this.alienGroup.add(anAlien)
   }
+
   constructor() {
-    super({ key: 'gameScene', physics: { default: 'arcade' } })
+    super({ key: 'gameScene', active: true, physics: { default: 'arcade', arcade: { debug: false } } })
 
     this.background = null
     this.ship = null
