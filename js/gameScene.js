@@ -39,6 +39,7 @@ class GameScene extends Phaser.Scene {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
+    this.ship.body.allowGravity = false
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
