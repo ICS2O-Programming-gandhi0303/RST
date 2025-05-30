@@ -5,6 +5,9 @@ class GameScene extends Phaser.Scene {
     this.background = null
     this.ship = null
     this.fireMissile = false
+    this.missileGroup = null
+    this.cursors = null
+    this.keySpaceObj = null
   }
 
   init() {
@@ -28,7 +31,7 @@ class GameScene extends Phaser.Scene {
 
     // Set up keyboard cursors
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.keySpaceObj = this.input.keyboard.addKey("SPACE")
+    this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
   update() {
@@ -44,8 +47,8 @@ class GameScene extends Phaser.Scene {
         this.ship.x = 1920
       }
     }
-    if (this.keySpaceObj.isDown === true) {
-      if (this.fireMissile === false) {
+    if (this.keySpaceObj.isDown) {
+      if (!this.fireMissile) {
         this.fireMissile = true
       
         const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
@@ -53,16 +56,15 @@ class GameScene extends Phaser.Scene {
         this.sound.play("laser")
       }
     }
-    if (this.keySpaceObj.isUp === true) {
+    if (this.keySpaceObj.isUp) {
       this.fireMissile = false
     }
     this.missileGroup.getChildren().forEach(function(item) {
-      item.y = item.y - 10
+      item.y -= 10
       if (item.y < 0) {
         item.destroy()
       }
     })
-    
   }
 }
 export default GameScene
