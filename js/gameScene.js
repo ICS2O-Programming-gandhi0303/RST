@@ -36,6 +36,9 @@ class GameScene extends Phaser.Scene {
     // Load the sound effect for the laser
     this.load.audio("laser", "./assets/laser1.wav")
     this.load.audio("explosion", "./assets/barrelExploding.wav")
+  }
+
+  create() {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
@@ -56,7 +59,6 @@ class GameScene extends Phaser.Scene {
     // Set up keyboard cursors
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-
   }
 
   update() {
