@@ -42,7 +42,7 @@ class GameScene extends Phaser.Scene {
     this.load.audio("explosion", "./assets/barrelExploding.wav")
   }
 
-  create(data) {
+  create() {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: '+ this.score.toString(), this.scoreTextStyle)
@@ -52,7 +52,9 @@ class GameScene extends Phaser.Scene {
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
     // Spawn a single alien at the start
-    this.createAlien()
+    if (this.alienGroup) {
+      this.createAlien()
+    }
 
     // Add collider between missiles and aliens
     this.physics.add.collider(this.missileGroup, this.alienGroup, function (missile, alienCollide) {
@@ -94,22 +96,21 @@ class GameScene extends Phaser.Scene {
       }
     }
     if (this.keySpaceObj.isUp) {
-      this.fireMissile = false
-    }
     // Destroy missiles that go off the top of the screen
-    this.missileGroup.getChildren().forEach(function(item) {
+    this.missileGroup.getChildren().forEach((item) => {
       if (item.active && item.y < 0) {
         item.destroy()
       }
     });
 
     // Destroy aliens that go off the bottom of the screen and respawn
-    this.alienGroup.getChildren().forEach(function(alien) {
+    this.alienGroup.getChildren().forEach((alien) => {
       if (alien.active && alien.y > 1080) {
         alien.destroy();
         this.createAlien();
       }
-    }, this);
+    });
+    }
   }
 }
 export default GameScene;
