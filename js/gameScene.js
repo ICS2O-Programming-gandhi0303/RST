@@ -3,9 +3,10 @@ class GameScene extends Phaser.Scene {
     const alienXLocation = Math.floor(Math.random() * 1920) + 1
     let alienXVelocity = Math.floor(Math.random() * 50) + 1
     alienXVelocity *= Math.round(Math.random()) ? -1 : 1 
-    const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
+    // Start at y = 0 so aliens are visible immediately
+    const anAlien = this.physics.add.sprite(alienXLocation, 0, 'alien')
     anAlien.body.allowGravity = false
-    anAlien.body.velocity.y = 200
+    anAlien.body.velocity.y = 200 // You can increase this if needed
     anAlien.body.velocity.x = alienXVelocity
     if (this.alienGroup) {
       this.alienGroup.add(anAlien)
