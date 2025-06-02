@@ -1,13 +1,12 @@
 class GameScene extends Phaser.Scene {
   createAlien() {
-    const alienXLocation = Math.floor(Math.random() * 1920) + 1
-    let alienXVelocity = Math.floor(Math.random() * 50) + 1
-    alienXVelocity *= Math.round(Math.random()) ? -1 : 1 
-    const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
-    anAlien.body.allowGravity = false
-    anAlien.body.velocity.y = 200 // Positive value makes the alien fall down
+    // Start aliens at y = 0 so they are visible and fall down the screen
+    const alienXLocation = Math.floor(Math.random() * (1920 - 100)) + 50 // avoid spawning at the very edge
+    let alienXVelocity = Math.floor(Math.random() * 100) - 50 // range: -50 to +49
+    const anAlien = this.physics.add.sprite(alienXLocation, 0, 'alien') // y = 0 so they are visible
+    anAlien.body.allowGravity = false // disable gravity, use velocity instead
+    anAlien.body.velocity.y = 200 // move down at a visible speed
     anAlien.body.velocity.x = alienXVelocity
-
     if (this.alienGroup) {
       this.alienGroup.add(anAlien)
     }
@@ -42,7 +41,7 @@ class GameScene extends Phaser.Scene {
     this.load.audio("explosion", "./assets/barrelExploding.wav")
   }
 
-  create() {
+  create(data) {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: '+ this.score.toString(), this.scoreTextStyle)
@@ -51,27 +50,24 @@ class GameScene extends Phaser.Scene {
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
-    // Spawn a single alien at the start
-    if (this.alienGroup) {
-      this.createAlien()
-    }
-
-    // Add collider between missiles and aliens
-    this.physics.add.collider(this.missileGroup, this.alienGroup, function (missile, alienCollide) {
-      missile.destroy()
+    this.createAlien()
+    this.createAlien()
+ 
+    this.physics.add.collider(this.missileGroup, this.alienGroup, function (_, alienCollide) {
       alienCollide.destroy()
       this.sound.play("explosion")
-      this.score += 1
+      this.score = this.score + 1
       this.scoreText.setText('Score: ' + this.score.toString())
       this.createAlien()
-    }, null, this)
+      this.createAlien()
+    }.bind(this))
 
     // Set up keyboard cursors
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
-  update() {
+  update(time, delta) {
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
       if (this.ship.x < 0) {
@@ -96,21 +92,22 @@ class GameScene extends Phaser.Scene {
       }
     }
     if (this.keySpaceObj.isUp) {
+      this.fireMissile = false
+    }
     // Destroy missiles that go off the top of the screen
-    this.missileGroup.getChildren().forEach((item) => {
+    this.missileGroup.getChildren().forEach(function(item) {
       if (item.active && item.y < 0) {
         item.destroy()
       }
     });
 
     // Destroy aliens that go off the bottom of the screen and respawn
-    this.alienGroup.getChildren().forEach((alien) => {
+    this.alienGroup.getChildren().forEach(function(alien) {
       if (alien.active && alien.y > 1080) {
         alien.destroy();
         this.createAlien();
       }
-    });
-    }
+    }, this);
   }
 }
 export default GameScene;
