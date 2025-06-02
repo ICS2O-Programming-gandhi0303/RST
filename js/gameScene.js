@@ -4,9 +4,13 @@ class GameScene extends Phaser.Scene {
     let alienXVelocity = Math.floor(Math.random() * 50) + 1
     alienXVelocity *= Math.round(Math.random()) ? -1 : 1 
     const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
-    anAlien.body.velocity.y = 200
+    anAlien.body.allowGravity = false
+    anAlien.body.velocity.y = 200 // Positive value makes the alien fall down
     anAlien.body.velocity.x = alienXVelocity
-    this.alienGroup.add(anAlien)
+
+    if (this.alienGroup) {
+      this.alienGroup.add(anAlien)
+    }
   }
   constructor() {
     super({ key: 'gameScene' })
@@ -38,7 +42,7 @@ class GameScene extends Phaser.Scene {
     this.load.audio("explosion", "./assets/barrelExploding.wav")
   }
 
-  create() {
+  create(data) {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: '+ this.score.toString(), this.scoreTextStyle)
@@ -47,17 +51,22 @@ class GameScene extends Phaser.Scene {
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
+    // Spawn a single alien at the start
     this.createAlien()
-    this.createAlien()
- 
-    this.physics.add.collider(this.missileGroup, this.alienGroup, function (_, alienCollide) {
+
+    // Add collider between missiles and aliens
+    this.physics.add.collider(this.missileGroup, this.alienGroup, function (missile, alienCollide) {
+      missile.destroy()
       alienCollide.destroy()
       this.sound.play("explosion")
-      this.score = this.score + 1
+      this.score += 1
       this.scoreText.setText('Score: ' + this.score.toString())
       this.createAlien()
-      this.createAlien()
-    }.bind(this))
+    }, null, this)
+
+    // Set up keyboard cursors
+    this.cursors = this.input.keyboard.createCursorKeys()
+    this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
   update() {
