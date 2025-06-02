@@ -94,6 +94,14 @@ class GameScene extends Phaser.Scene {
         item.destroy()
       }
     });
+
+    // Destroy aliens that go off the bottom of the screen and respawn
+    this.alienGroup.getChildren().forEach(function(alien) {
+      if (alien.active && alien.y > 1080) {
+        alien.destroy();
+        this.createAlien();
+      }
+    }, this);
   }
 }
 export default GameScene;
