@@ -1,9 +1,9 @@
 class GameScene extends Phaser.Scene {
   createAlien() {
     // Start aliens at y = 0 so they are visible and fall down the screen
-    const alienXLocation = Math.floor(Math.random() * (1920 - 100)) + 50 // avoid spawning at the very edge
-    let alienXVelocity = Math.floor(Math.random() * 100) - 50 // range: -50 to +49
-    alienXVelocity *= Math.round(Math.random()) ? -1 : 1 // make it negative or positive randomly
+    const alienXLocation = Math.floor(Math.random() * 1920)+ 1 // avoid spawning at the very edge
+    let alienXVelocity = Math.floor(Math.random() * 50) + 1
+    alienXVelocity *= Math.round(Math.random()) ? 1 : -1// make it negative or positive randomly
     const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien') // y = 0 so they are visible
     anAlien.body.velocity.y = 200 // fall speed
     anAlien.body.velocity.x = alienXVelocity // random horizontal speed
@@ -53,6 +53,7 @@ class GameScene extends Phaser.Scene {
  
     this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
       alienCollide.destroy()
+      missileCollide.destroy()
       this.sound.play("explosion")
       this.score = this.score + 1
       this.scoreText.setText('Score: ' + this.score.toString())
