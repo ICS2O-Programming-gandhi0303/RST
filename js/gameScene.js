@@ -5,8 +5,8 @@ class GameScene extends Phaser.Scene {
     let alienXVelocity = Math.floor(Math.random() * 100) - 50 // range: -50 to +49
     const anAlien = this.physics.add.sprite(alienXLocation, 0, 'alien') // y = 0 so they are visible
     anAlien.body.allowGravity = false // disable gravity, use velocity instead
-    anAlien.body.velocity.y = 200 // move down at a visible speed
-    anAlien.body.velocity.x = alienXVelocity
+    anAlien.setVelocityY(200) // move down at a visible speed
+    anAlien.setVelocityX(alienXVelocity)
     if (this.alienGroup) {
       this.alienGroup.add(anAlien)
     }
@@ -87,7 +87,7 @@ class GameScene extends Phaser.Scene {
         const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
         this.missileGroup.add(aNewMissile)
         aNewMissile.body.allowGravity = false
-        aNewMissile.body.velocity.y = -600
+        aNewMissile.setVelocityY(-600)
         this.sound.play("laser")
       }
     }
