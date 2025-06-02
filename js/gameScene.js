@@ -40,7 +40,7 @@ class GameScene extends Phaser.Scene {
     this.load.audio("explosion", "./assets/barrelExploding.wav")
   }
 
-  create(data) {
+  create() {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: '+ this.score.toString(), this.scoreTextStyle)
@@ -66,7 +66,7 @@ class GameScene extends Phaser.Scene {
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
-  update(time, delta) {
+  update() {
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
       if (this.ship.x < 0) {
@@ -100,8 +100,11 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    // Destroy aliens that go off the bottom of the screen and respawn
+    // Ensure aliens keep falling down
     this.alienGroup.getChildren().forEach(function(alien) {
+      if (alien.active) {
+        alien.body.velocity.y = 200;
+      }
       if (alien.active && alien.y > 1080) {
         alien.destroy();
         this.createAlien();
