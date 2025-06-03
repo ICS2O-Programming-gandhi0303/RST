@@ -69,16 +69,18 @@ class GameScene extends Phaser.Scene {
       this.createAlien()
     }.bind(this))
 
-    // Game over logic: show message and allow click to restart
-    this.physics.add.collider(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
-      this.sound.play('bomb')
-      this.physics.pause()
-      alienCollide.destroy()
-      shipCollide.destroy()
-      this.gameOver = true
-      this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
-      this.gameOverText.setInteractive({ useHandCursor: true })
-      this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+    // FIX: Use overlap for ship/alien collision and allow up/down movement
+    this.physics.add.overlap(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
+      if (!this.gameOver) {
+        this.sound.play('bomb')
+        this.physics.pause()
+        alienCollide.destroy()
+        shipCollide.destroy()
+        this.gameOver = true
+        this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
+        this.gameOverText.setInteractive({ useHandCursor: true })
+        this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+      }
     }.bind(this))
   
     // Set up keyboard cursors
@@ -90,6 +92,7 @@ class GameScene extends Phaser.Scene {
     if (this.gameOver) {
       return
     }
+    // Left/right movement
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
       if (this.ship.x < 0) {
@@ -100,6 +103,19 @@ class GameScene extends Phaser.Scene {
       this.ship.x += 15
       if (this.ship.x > 1920) {
         this.ship.x = 1920
+      }
+    }
+    // Up/down movement
+    if (this.cursors.up.isDown) {
+      this.ship.y -= 15
+      if (this.ship.y < 0) {
+        this.ship.y = 0
+      }
+    }
+    if (this.cursors.down.isDown) {
+      this.ship.y += 15
+      if (this.ship.y > 1080) {
+        this.ship.y = 1080
       }
     }
     if (this.keySpaceObj.isDown) {
