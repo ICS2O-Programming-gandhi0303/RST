@@ -35,8 +35,8 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     console.log('Game Scene')
-    this.load.image("Background", "./assets/backg.jpg")
-    this.load.image("ship", "./assets/spaceShip.png")
+    this.load.image("Background", "./assets/inter.jpg")
+    this.load.image("ship", "./assets/ship2.jpg")
     this.load.image("missile", "./assets/missile.png")
     this.load.image("alien", "./assets/alien.png")
     // Load the sound effect for the laser
