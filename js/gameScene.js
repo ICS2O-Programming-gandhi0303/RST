@@ -1,15 +1,15 @@
 class GameScene extends Phaser.Scene {
   createAlien() {
     // Start aliens at y = 0 so they are visible and fall down the screen
-    const alienXLocation = Math.floor(Math.random() * 1920)+ 1 // avoid spawning at the very edge
+    const alienXLocation = Math.floor(Math.random() * 1920) + 1 // avoid spawning at the very edge
     let alienXVelocity = Math.floor(Math.random() * 50) + 1
-    alienXVelocity *= Math.round(Math.random()) ? 1 : -1// make it negative or positive randomly
+    alienXVelocity *= Math.round(Math.random()) ? 1 : -1 // make it negative or positive randomly
     const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien') // y = 0 so they are visible
     anAlien.body.velocity.y = 200 // fall speed
     anAlien.body.velocity.x = alienXVelocity // random horizontal speed
     this.alienGroup.add(anAlien)
-    
   }
+
   constructor() {
     super({ key: 'gameScene' })
 
@@ -46,14 +46,14 @@ class GameScene extends Phaser.Scene {
   create() {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
-    this.scoreText = this.add.text(10, 10, 'Score: '+ this.score.toString(), this.scoreTextStyle)
+    this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
     this.ship.body.allowGravity = false
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
     this.createAlien()
- 
+
     this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
       alienCollide.destroy()
       missileCollide.destroy()
@@ -62,22 +62,26 @@ class GameScene extends Phaser.Scene {
       this.scoreText.setText('Score: ' + this.score.toString())
       this.createAlien()
       this.createAlien()
-    }.bind(this));
+    }.bind(this))
 
+    // Game over logic: show message and allow click to restart
     this.physics.add.collider(this.ship, this.alienGroup, function (shipCollide, alienCollide) {
-      // Game over logic
-      this.sound.play("explosion")
-      this.physics.pause() // Pause the physics engine
-      alienCollide.destroy() // Destroy the alien that hit the ship
-      shipCollide.destroy() // Destroy the ship
-      this.gameOver = true; // Set game over flag
-      this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again', this.gameOverTextStyle)
-      this.gameOverText.setOrigin(0.5, 0.5)
-      this.gameOverText.setInteractive({ useHandCursor: true })
-      this.gameOverText.on('pointerdown', () => this.scene.start('gameScene')) // Restart the game on click
-      this.alienGroup.clear(true, true) // Clear aliens
-      this.missileGroup.clear(true, true) // Clear missiles
-    }.bind(this));
+      if (!this.gameOver) {
+        this.sound.play("explosion")
+        this.physics.pause() // Pause the physics engine
+        alienCollide.destroy() // Destroy the alien that hit the ship
+        shipCollide.destroy() // Destroy the ship
+        this.gameOver = true // Set game over flag
+        this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again', this.gameOverTextStyle)
+        this.gameOverText.setOrigin(0.5, 0.5)
+        this.gameOverText.setInteractive({ useHandCursor: true })
+        this.gameOverText.on('pointerdown', () => {
+          this.scene.restart()
+        })
+        this.alienGroup.clear(true, true) // Clear aliens
+        this.missileGroup.clear(true, true) // Clear missiles
+      }
+    }.bind(this))
 
     // Set up keyboard cursors
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -86,7 +90,7 @@ class GameScene extends Phaser.Scene {
 
   update() {
     if (this.gameOver) {
-      return;
+      return
     }
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
@@ -103,7 +107,7 @@ class GameScene extends Phaser.Scene {
     if (this.keySpaceObj.isDown) {
       if (!this.fireMissile) {
         this.fireMissile = true
-      
+
         const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
         this.missileGroup.add(aNewMissile)
         aNewMissile.body.allowGravity = false
@@ -115,23 +119,23 @@ class GameScene extends Phaser.Scene {
       this.fireMissile = false
     }
     // Destroy missiles that go off the top of the screen
-    this.missileGroup.getChildren().forEach(function(item) {
+    this.missileGroup.getChildren().forEach(function (item) {
       if (item.active && item.y < 0) {
         item.destroy()
       }
-    });
+    })
 
     // Ensure aliens keep falling down
-    this.alienGroup.getChildren().forEach(function(alien) {
+    this.alienGroup.getChildren().forEach(function (alien) {
       if (alien.active) {
-        alien.body.velocity.y = 200;
+        alien.body.velocity.y = 200
       }
       if (alien.active && alien.y > 1080) {
-        alien.destroy();
-        this.createAlien();
+        alien.destroy()
+        this.createAlien()
       }
-    }, this);
+    }, this)
   }
 }
 
-export default GameScene;
+export default GameScene
