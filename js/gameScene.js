@@ -25,8 +25,8 @@ class GameScene extends Phaser.Scene {
     this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
 
     this.gameOverTextStyle = { font: '65px Arial', fill: '#ff0000', align: 'center' }
-    this.gameOverText = null
     this.gameOver = false
+    this.gameOverText = null
   }
 
   init() {
@@ -35,7 +35,7 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     console.log('Game Scene')
-    this.load.image("background", "./assets/backg.jpg")
+    this.load.image("starBackground", "./assets/starBackground.png")
     this.load.image("ship", "./assets/spaceShip.png")
     this.load.image("missile", "./assets/missile.png")
     this.load.image("alien", "./assets/alien.png")
@@ -45,8 +45,8 @@ class GameScene extends Phaser.Scene {
     this.load.audio("bomb", "./assets/bomb.wav")
   }
 
-  create(data) {
-    this.background = this.add.image(0, 0, 'background').setScale(2.0)
+  create() {
+    this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
@@ -70,17 +70,15 @@ class GameScene extends Phaser.Scene {
     }.bind(this))
 
     // Game over logic: show message and allow click to restart
-    this.physics.add.overlap(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
-      if (!this.gameOver) {
-        this.sound.play('bomb')
-        this.physics.pause()
-        alienCollide.destroy()
-        shipCollide.destroy()
-        this.gameOver = true
-        this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
-        this.gameOverText.setInteractive({ useHandCursor: true })
-        this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
-      }
+    this.physics.add.collider(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
+      this.sound.play('bomb')
+      this.physics.pause()
+      alienCollide.destroy()
+      shipCollide.destroy()
+      this.gameOver = true
+      this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
+      this.gameOverText.setInteractive({ useHandCursor: true })
+      this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
     }.bind(this))
   
     // Set up keyboard cursors
@@ -88,7 +86,7 @@ class GameScene extends Phaser.Scene {
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
-  update(time, delta) {
+  update() {
     if (this.gameOver) {
       return
     }
