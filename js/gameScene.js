@@ -25,6 +25,7 @@ class GameScene extends Phaser.Scene {
     this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
     this.gameOverText = null
     this.gameOverTextStyle = { font: '65px Arial', fill: '#ff0000', align: 'center' }
+    this.gameOver = false
   }
 
   init() {
@@ -61,22 +62,22 @@ class GameScene extends Phaser.Scene {
       this.scoreText.setText('Score: ' + this.score.toString())
       this.createAlien()
       this.createAlien()
-    }.bind(this))
+    }.bind(this));
+
     this.physics.add.collider(this.ship, this.alienGroup, function (shipCollide, alienCollide) {
       // Game over logic
-      this.sound.play("bomb")
+      this.sound.play("explosion")
       this.physics.pause() // Pause the physics engine
       alienCollide.destroy() // Destroy the alien that hit the ship
-      shipCollide.destroy()// Tint the ship red to indicate damage
+      shipCollide.destroy() // Destroy the ship
+      this.gameOver = true; // Set game over flag
       this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again', this.gameOverTextStyle)
+      this.gameOverText.setOrigin(0.5, 0.5)
       this.gameOverText.setInteractive({ useHandCursor: true })
       this.gameOverText.on('pointerdown', () => this.scene.start('gameScene')) // Restart the game on click
       this.alienGroup.clear(true, true) // Clear aliens
       this.missileGroup.clear(true, true) // Clear missiles
-      this.cursors.left.isDown = false // Stop ship movement
-      this.cursors.right.isDown = false // Stop ship movement
-      this.keySpaceObj.isDown = false // Stop firing missiles
-    }.bind(this))
+    }.bind(this));
 
     // Set up keyboard cursors
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -84,6 +85,9 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
+    if (this.gameOver) {
+      return;
+    }
     if (this.cursors.left.isDown) {
       this.ship.x -= 15
       if (this.ship.x < 0) {
