@@ -46,6 +46,9 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    // Reset score when the scene starts
+    this.score = 0
+
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
@@ -79,7 +82,10 @@ class GameScene extends Phaser.Scene {
         this.gameOver = true
         this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
         this.gameOverText.setInteractive({ useHandCursor: true })
-        this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+        this.gameOverText.on('pointerdown', () => {
+          this.gameOver = false
+          this.scene.restart() // This will call create() again and reset score
+        })
       }
     }.bind(this))
   
