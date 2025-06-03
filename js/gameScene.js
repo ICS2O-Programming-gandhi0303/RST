@@ -1,15 +1,4 @@
 class GameScene extends Phaser.Scene {
-  createAlien() {
-    // Start aliens at y = 0 so they are visible and fall down the screen
-    const alienXLocation = Math.floor(Math.random() * 1920) + 1 // avoid spawning at the very edge
-    let alienXVelocity = Math.floor(Math.random() * 50) + 1
-    alienXVelocity *= Math.round(Math.random()) ? 1 : -1 // make it negative or positive randomly
-    const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien') // y = 0 so they are visible
-    anAlien.body.velocity.y = 200 // fall speed
-    anAlien.body.velocity.x = alienXVelocity // random horizontal speed
-    this.alienGroup.add(anAlien)
-  }
-
   constructor() {
     super({ key: 'gameScene' })
 
@@ -33,108 +22,106 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    console.log('Game Scene')
     this.load.image("starBackground", "./assets/starBackground.png")
     this.load.image("ship", "./assets/spaceShip.png")
     this.load.image("missile", "./assets/missile.png")
     this.load.image("alien", "./assets/alien.png")
-    // Load the sound effect for the laser
     this.load.audio("laser", "./assets/laser1.wav")
     this.load.audio("explosion", "./assets/barrelExploding.wav")
     this.load.audio("bomb", "./assets/bomb.wav")
   }
 
   create() {
-    this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
-    this.background.setOrigin(0, 0)
-    this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
-    this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
-    this.ship.setCollideWorldBounds(true)
-    if (this.ship.body) {
-      this.ship.body.allowGravity = false
-    }
+    this.background = this.add.image(0, 0, 'starBackground').setScale(2.0).setOrigin(0, 0)
+
+    this.scoreText = this.add.text(10, 10, 'Score: 0', this.scoreTextStyle)
+    this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship').setCollideWorldBounds(true)
+    this.ship.body.allowGravity = false
+
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
-    // Ensure groups are initialized before creating aliens
+
     this.createAlien()
 
-    this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
-      alienCollide.destroy()
-      missileCollide.destroy()
+    this.physics.add.collider(this.missileGroup, this.alienGroup, (missile, alien) => {
+      missile.destroy()
+      alien.destroy()
       this.sound.play("explosion")
-      this.score = this.score + 1
-      this.scoreText.setText('Score: ' + this.score.toString())
+      this.score += 1
+      this.scoreText.setText('Score: ' + this.score)
       this.createAlien()
       this.createAlien()
-    }.bind(this))
+    })
 
-    // Game over logic: show message and allow click to restart
-    this.physics.add.collider(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
-      this.sound.play('bomb')
-      this.physics.pause()
-      shipCollide.destroy()
-      alienCollide.destroy()
-      this.gameOver = true
-      this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
-      this.gameOverText.setInteractive({ useHandCursor: true })
-      this.gameOverText.on('pointerdown', () => {
-        this.gameOver = false
-        this.scene.start('gameScene')
-      })
-    }.bind(this))
-  
-    // Set up keyboard cursors
+    this.physics.add.overlap(this.ship, this.alienGroup, (ship, alien) => {
+      if (!this.gameOver) {
+        this.sound.play('bomb')
+        this.physics.pause()
+        ship.destroy()
+        alien.destroy()
+        this.gameOver = true
+
+        this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
+        this.gameOverText.setInteractive({ useHandCursor: true })
+        this.gameOverText.on('pointerdown', () => {
+          this.scene.restart()
+        })
+      }
+    })
+
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
-  update() {
-    if (this.gameOver) {
-      return
-    }
-    if (this.cursors.left.isDown) {
-      this.ship.x -= 15
-      if (this.ship.x < 0) {
-        this.ship.x = 0
-      }
-    }
-    if (this.cursors.right.isDown) {
-      this.ship.x += 15
-      if (this.ship.x > 1920) {
-        this.ship.x = 1920
-      }
-    }
-    if (this.keySpaceObj.isDown) {
-      if (!this.fireMissile) {
-        this.fireMissile = true
+  createAlien() {
+    const alienXLocation = Phaser.Math.Between(100, 1820) // avoid edges
+    let alienXVelocity = Phaser.Math.Between(50, 100)
+    alienXVelocity *= Phaser.Math.Between(0, 1) ? 1 : -1
+    const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
+    anAlien.setVelocity(alienXVelocity, 200)
+    this.alienGroup.add(anAlien)
+  }
 
-        const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
-        this.missileGroup.add(aNewMissile)
-        aNewMissile.body.allowGravity = false
-        aNewMissile.setVelocityY(-600)
-        this.sound.play("laser")
-      }
+  update() {
+    if (this.gameOver) return
+
+    // Ship movement
+    if (this.cursors.left.isDown) {
+      this.ship.setVelocityX(-300)
+    } else if (this.cursors.right.isDown) {
+      this.ship.setVelocityX(300)
+    } else {
+      this.ship.setVelocityX(0)
     }
+
+    // Missile firing
+    if (this.keySpaceObj.isDown && !this.fireMissile) {
+      this.fireMissile = true
+      const missile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
+      missile.body.allowGravity = false
+      missile.setVelocityY(-600)
+      this.missileGroup.add(missile)
+      this.sound.play("laser")
+    }
+
     if (this.keySpaceObj.isUp) {
       this.fireMissile = false
     }
-    // Destroy missiles that go off the top of the screen
-    this.missileGroup.getChildren().forEach(function (item) {
-      if (item.active && item.y < 0) {
-        item.destroy()
+
+    // Destroy off-screen missiles
+    this.missileGroup.getChildren().forEach(missile => {
+      if (missile.active && missile.y < 0) {
+        missile.destroy()
       }
-    }, this)
+    })
 
     // Update aliens and respawn if needed
-    this.alienGroup.getChildren().forEach(function (alien) {
-      if (alien.active && alien.body) {
-        alien.body.velocity.y = 200
-      }
+    this.alienGroup.getChildren().forEach(alien => {
       if (alien.active && alien.y > 1080) {
         alien.destroy()
         this.createAlien()
       }
-    }, this)
+    })
   }
 }
 
