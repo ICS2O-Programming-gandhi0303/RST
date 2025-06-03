@@ -41,6 +41,7 @@ class GameScene extends Phaser.Scene {
     // Load the sound effect for the laser
     this.load.audio("laser", "./assets/laser1.wav")
     this.load.audio("explosion", "./assets/barrelExploding.wav")
+    this.load.audio("bomb", "./assets/bomb.wav")
   }
 
   create() {
@@ -48,7 +49,10 @@ class GameScene extends Phaser.Scene {
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
-    this.ship.body.allowGravity = false
+    this.ship.setCollideWorldBounds(true)
+    if (this.ship.body) {
+      this.ship.body.allowGravity = false
+    }
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
@@ -70,9 +74,13 @@ class GameScene extends Phaser.Scene {
       this.physics.pause()
       shipCollide.destroy()
       alienCollide.destroy()
+      this.gameOver = true
       this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
       this.gameOverText.setInteractive({ useHandCursor: true })
-      this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+      this.gameOverText.on('pointerdown', () => {
+        this.gameOver = false
+        this.scene.start('gameScene')
+      })
     }.bind(this))
   
     // Set up keyboard cursors
@@ -115,11 +123,11 @@ class GameScene extends Phaser.Scene {
       if (item.active && item.y < 0) {
         item.destroy()
       }
-    })
+    }, this)
 
-    // Ensure aliens keep falling down
+    // Update aliens and respawn if needed
     this.alienGroup.getChildren().forEach(function (alien) {
-      if (alien.active) {
+      if (alien.active && alien.body) {
         alien.body.velocity.y = 200
       }
       if (alien.active && alien.y > 1080) {
