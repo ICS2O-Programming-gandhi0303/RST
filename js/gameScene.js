@@ -65,13 +65,17 @@ class GameScene extends Phaser.Scene {
     }.bind(this))
 
     // Game over logic: show message and allow click to restart
-    this.physics.add.collider(this.ship, this.alienGroup, function (shipCollide, alienCollide) {
+    this.shipAlienCollider = this.physics.add.collider(this.ship, this.alienGroup, function (shipCollide, alienCollide) {
       if (!this.gameOver) {
         this.sound.play("explosion")
         this.physics.pause() // Pause the physics engine
         alienCollide.destroy() // Destroy the alien that hit the ship
         shipCollide.destroy() // Destroy the ship
         this.gameOver = true // Set game over flag
+
+        // Remove collider to prevent multiple triggers
+        this.physics.world.removeCollider(this.shipAlienCollider);
+
         this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again', this.gameOverTextStyle)
         this.gameOverText.setOrigin(0.5, 0.5)
         this.gameOverText.setInteractive({ useHandCursor: true })
