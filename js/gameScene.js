@@ -35,8 +35,8 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     console.log('Game Scene')
-    this.load.image("Background", "./assets/inter.jpg")
-    this.load.image("ship", "./assets/ship2.jpg")
+    this.load.image("starBackground", "./assets/inter.jpg")
+    this.load.image("ship", "./assets/spaceShip.png")
     this.load.image("missile", "./assets/missile.png")
     this.load.image("alien", "./assets/alien.png")
     // Load the sound effect for the laser
@@ -49,7 +49,7 @@ class GameScene extends Phaser.Scene {
     // Reset score when the scene starts
     this.score = 0
 
-    this.background = this.add.image(0, 0, 'Background').setScale(2.0)
+    this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
