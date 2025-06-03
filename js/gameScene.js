@@ -23,9 +23,7 @@ class GameScene extends Phaser.Scene {
     this.score = 0
     this.scoreText = null
     this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
-    this.gameOverText = null
     this.gameOverTextStyle = { font: '65px Arial', fill: '#ff0000', align: 'center' }
-    this.gameOver = false
   }
 
   init() {
@@ -44,7 +42,7 @@ class GameScene extends Phaser.Scene {
     this.load.audio("bomb", "./assets/bomb.wav")
   }
 
-  create() {
+  create(data) {
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
     this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
@@ -72,25 +70,12 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
       this.sound.play('bomb')
       this.physics.pause()
-      shipCollide.destroy()
       alienCollide.destroy()
+      shipCollide.destroy()
       this.gameOver = true
       this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
       this.gameOverText.setInteractive({ useHandCursor: true })
-      this.gameOverText.on('pointerdown', () => {
-        this.gameOver = true
-        this.gameOverText.destroy()
-        this.missileGroup.clear(true, true)
-        this.alienGroup.clear(true, true)
-        this.score = 0
-        this.scoreText.setText('Score: ' + this.score.toString())
-        this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
-        this.ship.setCollideWorldBounds(true)
-        if (this.ship.body) {
-          this.ship.body.allowGravity = false
-        }
-        this.scene.start('gameScene')
-      })
+      this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
     }.bind(this))
   
     // Set up keyboard cursors
@@ -98,7 +83,7 @@ class GameScene extends Phaser.Scene {
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
-  update() {
+  update(time, delta) {
     if (this.gameOver) {
       return
     }
