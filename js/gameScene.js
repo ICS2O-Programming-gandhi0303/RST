@@ -1,4 +1,5 @@
 class GameScene extends Phaser.Scene {
+  // Function to create a new alien at a random x position with random horizontal velocity
   createAlien() {
     // Start aliens at y = 0 so they are visible and fall down the screen
     const alienXLocation = Math.floor(Math.random() * 1920) + 1 // avoid spawning at the very edge
@@ -13,6 +14,7 @@ class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: 'gameScene' })
 
+    // Game objects and state variables
     this.background = null
     this.ship = null
     this.fireMissile = false
@@ -29,10 +31,12 @@ class GameScene extends Phaser.Scene {
     this.gameOverText = null
   }
 
+  // Set background color before scene loads
   init() {
     this.cameras.main.setBackgroundColor('#ffffff')
   }
 
+  // Preload assets (images and sounds)
   preload() {
     console.log('Game Scene')
     this.load.image("starBackground", "./assets/statBackground.png")
@@ -45,34 +49,41 @@ class GameScene extends Phaser.Scene {
     this.load.audio("bomb", "./assets/bomb.wav")
   }
 
+  // Create game objects and set up physics/collisions
   create() {
     // Reset score when the scene starts
     this.score = 0
 
+    // Add background image
     this.background = this.add.image(0, 0, 'starBackground').setScale(2.0)
     this.background.setOrigin(0, 0)
+    // Add score text
     this.scoreText = this.add.text(10, 10, 'Score: ' + this.score.toString(), this.scoreTextStyle)
+    // Add player ship
     this.ship = this.physics.add.sprite(1920 / 2, 1080 - 100, 'ship')
     this.ship.setCollideWorldBounds(true)
     if (this.ship.body) {
       this.ship.body.allowGravity = false
     }
+    // Create groups for missiles and aliens
     this.missileGroup = this.physics.add.group()
     this.alienGroup = this.physics.add.group()
     // Ensure groups are initialized before creating aliens
     this.createAlien()
 
+    // Handle missile and alien collision
     this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
       alienCollide.destroy()
       missileCollide.destroy()
       this.sound.play("explosion")
       this.score = this.score + 1
       this.scoreText.setText('Score: ' + this.score.toString())
+      // Spawn two new aliens when one is destroyed
       this.createAlien()
       this.createAlien()
     }.bind(this))
 
-    // FIX: Use overlap for ship/alien collision and allow up/down movement
+    // Handle ship and alien overlap (game over)
     this.physics.add.overlap(this.ship, this.alienGroup, function(shipCollide, alienCollide) {
       if (!this.gameOver) {
         this.sound.play('bomb')
@@ -80,6 +91,7 @@ class GameScene extends Phaser.Scene {
         alienCollide.destroy()
         shipCollide.destroy()
         this.gameOver = true
+        // Show game over text and allow restart on click
         this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
         this.gameOverText.setInteractive({ useHandCursor: true })
         this.gameOverText.on('pointerdown', () => {
@@ -89,11 +101,12 @@ class GameScene extends Phaser.Scene {
       }
     }.bind(this))
   
-    // Set up keyboard cursors
+    // Set up keyboard cursors for movement and firing
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keySpaceObj = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
+  // Main game loop
   update() {
     if (this.gameOver) {
       return
@@ -124,6 +137,7 @@ class GameScene extends Phaser.Scene {
         this.ship.y = 1080
       }
     }
+    // Fire missile when space is pressed (one at a time)
     if (this.keySpaceObj.isDown) {
       if (!this.fireMissile) {
         this.fireMissile = true
@@ -135,6 +149,7 @@ class GameScene extends Phaser.Scene {
         this.sound.play("laser")
       }
     }
+    // Reset fireMissile flag when space is released
     if (this.keySpaceObj.isUp) {
       this.fireMissile = false
     }
@@ -150,6 +165,7 @@ class GameScene extends Phaser.Scene {
       if (alien.active && alien.body) {
         alien.body.velocity.y = 200
       }
+      // If alien goes off the bottom, destroy and respawn
       if (alien.active && alien.y > 1080) {
         alien.destroy()
         this.createAlien()
